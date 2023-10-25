@@ -7,10 +7,12 @@ import {
   QueryList,
   EventEmitter,
 } from '@angular/core';
-import {NavigationMode} from '../navigation/navigation-mode.interface';
-import {WizardStep} from '../util/wizard-step.interface';
-import {MovingDirection} from '../util/moving-direction.enum';
-import {ConfigurableNavigationMode} from '../navigation/configurable-navigation-mode';
+import { NavigationMode } from '../navigation/navigation-mode.interface';
+import { WizardStep } from '../util/wizard-step.interface';
+import { MovingDirection } from '../util/moving-direction.enum';
+import { ConfigurableNavigationMode } from '../navigation/configurable-navigation-mode';
+import { WizardComponentInterface } from './wizard.component.interface';
+import { WizardNavigationBarComponent } from './wizard-navigation-bar.component';
 
 /**
  * The `aw-wizard` component defines the root component of a wizard.
@@ -51,7 +53,9 @@ import {ConfigurableNavigationMode} from '../navigation/configurable-navigation-
   selector: 'aw-wizard',
   templateUrl: 'wizard.component.html',
 })
-export class WizardComponent implements AfterContentInit {
+export class WizardComponent
+  implements AfterContentInit, WizardComponentInterface
+{
   /**
    * A QueryList containing all [[WizardStep]]s inside this wizard
    */
@@ -89,7 +93,9 @@ export class WizardComponent implements AfterContentInit {
     // - the index of a wizard step with a `selected` directive, or
     // - the default step index, set in the [[WizardComponent]]
 
-    const foundDefaultStep = this.wizardSteps.find(step => step.defaultSelected);
+    const foundDefaultStep = this.wizardSteps.find(
+      (step) => step.defaultSelected
+    );
 
     if (foundDefaultStep) {
       return this.getIndexOfStep(foundDefaultStep);
@@ -134,8 +140,7 @@ export class WizardComponent implements AfterContentInit {
   /**
    * Constructor
    */
-  constructor() {
-  }
+  constructor() {}
 
   /**
    * Returns true if this wizard uses a horizontal orientation.
@@ -159,12 +164,17 @@ export class WizardComponent implements AfterContentInit {
     return this.navBarLocation === 'left' || this.navBarLocation === 'right';
   }
 
+  @ContentChildren(WizardNavigationBarComponent)
+  set navigationBar(navBar: WizardNavigationBarComponent) {
+    navBar.wizard = this;
+  }
+
   /**
    * Initialization work
    */
   public ngAfterContentInit(): void {
     // add a subscriber to the wizard steps QueryList to listen to changes in the DOM
-    this.wizardStepsQueryList.changes.subscribe(changedWizardSteps => {
+    this.wizardStepsQueryList.changes.subscribe((changedWizardSteps) => {
       this.updateWizardSteps(changedWizardSteps.toArray());
     });
 
@@ -196,7 +206,7 @@ export class WizardComponent implements AfterContentInit {
    * If the wizard has been completed, i.e. all steps are either completed or optional, this value is true, otherwise it is false
    */
   public get completed(): boolean {
-    return this.wizardSteps.every(step => step.completed || step.optional);
+    return this.wizardSteps.every((step) => step.completed || step.optional);
   }
 
   /**
@@ -214,7 +224,9 @@ export class WizardComponent implements AfterContentInit {
   private updateWizardSteps(wizardSteps: WizardStep[]): void {
     // the wizard is currently not in the initialization phase
     if (this.wizardSteps.length > 0 && this.currentStepIndex > -1) {
-      this.currentStepIndex = wizardSteps.indexOf(this.wizardSteps[this.currentStepIndex]);
+      this.currentStepIndex = wizardSteps.indexOf(
+        this.wizardSteps[this.currentStepIndex]
+      );
     }
 
     this._wizardSteps = wizardSteps;
@@ -243,7 +255,11 @@ export class WizardComponent implements AfterContentInit {
    * @returns True if the given `stepIndex` is contained inside this wizard, false otherwise
    */
   public hasStep(stepIndex: number): boolean {
-    return this.wizardSteps.length > 0 && 0 <= stepIndex && stepIndex < this.wizardSteps.length;
+    return (
+      this.wizardSteps.length > 0 &&
+      0 <= stepIndex &&
+      stepIndex < this.wizardSteps.length
+    );
   }
 
   /**
@@ -270,7 +286,10 @@ export class WizardComponent implements AfterContentInit {
    * @returns True if the wizard is currently inside its last step
    */
   public isLastStep(): boolean {
-    return this.wizardSteps.length > 0 && this.currentStepIndex === this.wizardSteps.length - 1;
+    return (
+      this.wizardSteps.length > 0 &&
+      this.currentStepIndex === this.wizardSteps.length - 1
+    );
   }
 
   /**
@@ -283,7 +302,9 @@ export class WizardComponent implements AfterContentInit {
    */
   public getStepAtIndex(stepIndex: number): WizardStep {
     if (!this.hasStep(stepIndex)) {
-      throw new Error(`Expected a known step, but got stepIndex: ${stepIndex}.`);
+      throw new Error(
+        `Expected a known step, but got stepIndex: ${stepIndex}.`
+      );
     }
 
     return this.wizardSteps[stepIndex];
@@ -297,7 +318,7 @@ export class WizardComponent implements AfterContentInit {
    * @returns The found index of a step with the given step id, or `-1` if no step with the given id is included in the wizard
    */
   public getIndexOfStepWithId(stepId: string): number {
-    return this.wizardSteps.findIndex(step => step.stepId === stepId);
+    return this.wizardSteps.findIndex((step) => step.stepId === stepId);
   }
 
   /**
@@ -354,8 +375,17 @@ export class WizardComponent implements AfterContentInit {
    * @param preFinalize An event emitter, to be called before the step has been transitioned
    * @param postFinalize An event emitter, to be called after the step has been transitioned
    */
-  public goToStep(destinationIndex: number, preFinalize?: EventEmitter<void>, postFinalize?: EventEmitter<void>): void {
-    return this.navigation.goToStep(this, destinationIndex, preFinalize, postFinalize);
+  public goToStep(
+    destinationIndex: number,
+    preFinalize?: EventEmitter<void>,
+    postFinalize?: EventEmitter<void>
+  ): void {
+    return this.navigation.goToStep(
+      this,
+      destinationIndex,
+      preFinalize,
+      postFinalize
+    );
   }
 
   /**
@@ -364,8 +394,16 @@ export class WizardComponent implements AfterContentInit {
    * @param preFinalize An event emitter, to be called before the step has been transitioned
    * @param postFinalize An event emitter, to be called after the step has been transitioned
    */
-  public goToPreviousStep(preFinalize?: EventEmitter<void>, postFinalize?: EventEmitter<void>): void {
-    return this.navigation.goToStep(this, this.currentStepIndex - 1, preFinalize, postFinalize);
+  public goToPreviousStep(
+    preFinalize?: EventEmitter<void>,
+    postFinalize?: EventEmitter<void>
+  ): void {
+    return this.navigation.goToStep(
+      this,
+      this.currentStepIndex - 1,
+      preFinalize,
+      postFinalize
+    );
   }
 
   /**
@@ -374,8 +412,16 @@ export class WizardComponent implements AfterContentInit {
    * @param preFinalize An event emitter, to be called before the step has been transitioned
    * @param postFinalize An event emitter, to be called after the step has been transitioned
    */
-  public goToNextStep(preFinalize?: EventEmitter<void>, postFinalize?: EventEmitter<void>): void {
-    return this.navigation.goToStep(this, this.currentStepIndex + 1, preFinalize, postFinalize);
+  public goToNextStep(
+    preFinalize?: EventEmitter<void>,
+    postFinalize?: EventEmitter<void>
+  ): void {
+    return this.navigation.goToStep(
+      this,
+      this.currentStepIndex + 1,
+      preFinalize,
+      postFinalize
+    );
   }
 
   /**

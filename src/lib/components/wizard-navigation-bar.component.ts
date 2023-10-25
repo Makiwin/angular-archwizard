@@ -1,7 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { WizardCompletionStep } from '../util/wizard-completion-step.interface';
 import { WizardStep } from '../util/wizard-step.interface';
-import { WizardComponent } from './wizard.component';
+import { WizardComponentInterface } from './wizard.component.interface';
 
 /**
  * The `aw-wizard-navigation-bar` component contains the navigation bar inside a [[WizardComponent]].
@@ -21,13 +21,14 @@ import { WizardComponent } from './wizard.component';
   templateUrl: 'wizard-navigation-bar.component.html',
 })
 export class WizardNavigationBarComponent {
+  public wizard: WizardComponentInterface;
+
   /**
    * Constructor
    *
    * @param wizard The state the wizard currently resides in
    */
-  constructor(public wizard: WizardComponent) {
-  }
+  constructor() {}
 
   /**
    * Returns all [[WizardStep]]s contained in the wizard
@@ -116,7 +117,10 @@ export class WizardNavigationBarComponent {
    * @returns True if the step can be marked as navigable
    */
   public isNavigable(wizardStep: WizardStep): boolean {
-    return !wizardStep.selected && !this.wizard.disableNavigationBar &&
-      this.wizard.isNavigable(this.wizard.getIndexOfStep(wizardStep));
+    return (
+      !wizardStep.selected &&
+      !this.wizard.disableNavigationBar &&
+      this.wizard.isNavigable(this.wizard.getIndexOfStep(wizardStep))
+    );
   }
 }

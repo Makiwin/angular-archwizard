@@ -1,10 +1,17 @@
-import { Directive, EventEmitter, HostListener, Input, Optional, Output } from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  HostListener,
+  Input,
+  Optional,
+  Output,
+} from '@angular/core';
 import { NavigationMode } from '../navigation/navigation-mode.interface';
 import { isStepId, StepId } from '../util/step-id.interface';
 import { isStepIndex, StepIndex } from '../util/step-index.interface';
 import { isStepOffset, StepOffset } from '../util/step-offset.interface';
 import { WizardStep } from '../util/wizard-step.interface';
-import { WizardComponent } from '../components/wizard.component';
+import { WizardComponentInterface } from '../components/wizard.component.interface';
 
 /**
  * The `awGoToStep` directive can be used to navigate to a given step.
@@ -39,7 +46,7 @@ import { WizardComponent } from '../components/wizard.component';
  * @author Marc Arndt
  */
 @Directive({
-  selector: '[awGoToStep]'
+  selector: '[awGoToStep]',
 })
 export class GoToStepDirective {
   /**
@@ -64,14 +71,15 @@ export class GoToStepDirective {
   @Input('awGoToStep')
   public targetStep: WizardStep | StepOffset | StepIndex | StepId;
 
+  @Input()
+  public wizard: WizardComponentInterface;
+
   /**
    * Constructor
    *
-   * @param wizard The wizard component
    * @param wizardStep The wizard step, which contains this [[GoToStepDirective]]
    */
-  constructor(private wizard: WizardComponent, @Optional() private wizardStep: WizardStep) {
-  }
+  constructor(@Optional() private wizardStep: WizardStep) {}
 
   /**
    * A convenience field for `preFinalize`
@@ -103,13 +111,19 @@ export class GoToStepDirective {
     if (isStepIndex(this.targetStep)) {
       destinationStep = this.targetStep.stepIndex;
     } else if (isStepId(this.targetStep)) {
-      destinationStep = this.wizard.getIndexOfStepWithId(this.targetStep.stepId);
+      destinationStep = this.wizard.getIndexOfStepWithId(
+        this.targetStep.stepId
+      );
     } else if (isStepOffset(this.targetStep) && this.wizardStep !== null) {
-      destinationStep = this.wizard.getIndexOfStep(this.wizardStep) + this.targetStep.stepOffset;
+      destinationStep =
+        this.wizard.getIndexOfStep(this.wizardStep) +
+        this.targetStep.stepOffset;
     } else if (this.targetStep instanceof WizardStep) {
       destinationStep = this.wizard.getIndexOfStep(this.targetStep);
     } else {
-      throw new Error(`Input 'targetStep' is neither a WizardStep, StepOffset, StepIndex or StepId`);
+      throw new Error(
+        `Input 'targetStep' is neither a WizardStep, StepOffset, StepIndex or StepId`
+      );
     }
 
     return destinationStep;
@@ -121,6 +135,10 @@ export class GoToStepDirective {
    */
   @HostListener('click')
   public onClick(): void {
-    this.wizard.goToStep(this.destinationStep, this.preFinalize, this.postFinalize);
+    this.wizard.goToStep(
+      this.destinationStep,
+      this.preFinalize,
+      this.postFinalize
+    );
   }
 }
