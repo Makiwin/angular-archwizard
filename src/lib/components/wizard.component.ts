@@ -2,17 +2,18 @@ import {
   AfterContentInit,
   Component,
   ContentChildren,
+  EventEmitter,
   HostBinding,
   Input,
   QueryList,
-  EventEmitter,
+  ViewChild,
 } from '@angular/core';
-import { NavigationMode } from '../navigation/navigation-mode.interface';
-import { WizardStep } from '../util/wizard-step.interface';
-import { MovingDirection } from '../util/moving-direction.enum';
 import { ConfigurableNavigationMode } from '../navigation/configurable-navigation-mode';
-import { WizardComponentInterface } from './wizard.component.interface';
+import { NavigationMode } from '../navigation/navigation-mode.interface';
+import { MovingDirection } from '../util/moving-direction.enum';
+import { WizardStep } from '../util/wizard-step.interface';
 import { WizardNavigationBarComponent } from './wizard-navigation-bar.component';
+import { WizardComponentInterface } from './wizard.component.interface';
 
 /**
  * The `aw-wizard` component defines the root component of a wizard.
@@ -164,7 +165,7 @@ export class WizardComponent
     return this.navBarLocation === 'left' || this.navBarLocation === 'right';
   }
 
-  @ContentChildren(WizardNavigationBarComponent)
+  @ViewChild(WizardNavigationBarComponent)
   set navigationBar(navBar: WizardNavigationBarComponent) {
     navBar.wizard = this;
   }
