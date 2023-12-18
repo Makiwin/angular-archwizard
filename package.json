@@ -1,6 +1,6 @@
 {
   "name": "@makiwin/angular-archwizard",
-  "version": "8.0.1-develop",
+  "version": "8.0.2-develop",
   "license": "MIT",
   "description": "An Angular 9+ module containing a wizard component and its supporting components and directives",
   "homepage": "https://github.com/madoar/angular-archwizard",
@@ -40,7 +40,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "npm run build-js && npm run extract-scss-variables && npm run build-css",
+    "build": "npm run build-js && npm run build-css",
     "build-js": "ng build",
     "extract-scss-variables": "extract-scss-variables ./dist/styles/archwizard.scss ./dist/styles/variables.scss",
     "build-css": "sass ./dist/styles/archwizard.scss ./dist/styles/archwizard.css",

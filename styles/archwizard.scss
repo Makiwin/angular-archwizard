@@ -1,6 +1,7 @@
-@use 'sass:math' as Math;
 // Wizard layouts to be generated (all by default).
 // Override this variable to exclude layouts you don't need.
+@use 'sass:math';
+
 $aw-layouts: 'horizontal' 'vertical' !default;
 
 // Wizard indicator styles to be generated (all by default).
@@ -229,14 +230,14 @@ $aw-param-step-state: null;
   background-color: $line-color;
   content: '';
   position: absolute;
-  left: -(Math.div($dot-height, 2));
+  left: -($dot-height * 0.5);
   top: $dot-height;
   height: calc(100% - #{$dot-height});
   width: 1px;
 
   @include rtl {
     left: auto;
-    right: -(Math.div($dot-height, 2));
+    right: -($dot-height * 0.5);
   }
 }
 
@@ -606,12 +607,12 @@ aw-wizard-navigation-bar {
       @for $number-of-components from 2 through 10 {
         &.steps-#{$number-of-components} {
           &:after {
-            left: Math.div(100%, Math.div($number-of-components, 2));
-            right: Math.div(100%, Math.div($number-of-components, 2));
+            left: math.div(100%, $number-of-components) * 0.5;
+            right: math.div(100%, $number-of-components) * 0.5;
           }
 
           li {
-            width: Math.div(100%, $number-of-components);
+            width: math.div(100%, $number-of-components);
           }
         }
       }
